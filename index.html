@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Rally your crew, track weather, and hit the next beach cleanup with ShoreSquad - the dope map app for eco-action.">
+    <meta name="theme-color" content="#0066CC">
+    <meta property="og:title" content="ShoreSquad - Rally Your Beach Cleanup Crew">
+    <meta property="og:description" content="Track weather, coordinate cleanups, and make ocean impact with your crew.">
+    <meta property="og:image" content="/assets/og-image.png">
+    
+    <title>ShoreSquad | Rally Your Beach Cleanup Crew</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌊%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Header Navigation -->
+    <header class="header" role="banner">
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <div class="navbar-container">
+                <div class="navbar-logo">
+                    <a href="#" title="ShoreSquad - Home">
+                        <span class="logo-emoji" aria-hidden="true">🌊</span>
+                        <span class="logo-text">ShoreSquad</span>
+                    </a>
+                </div>
+                
+                <!-- Hamburger menu for mobile -->
+                <button class="hamburger" id="hamburger-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navbar-menu">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+
+                <ul class="navbar-menu" id="navbar-menu" role="menubar">
+                    <li><a href="#map" role="menuitem">Map</a></li>
+                    <li><a href="#weather" role="menuitem">Weather</a></li>
+                    <li><a href="#cleanups" role="menuitem">Cleanups</a></li>
+                    <li><a href="#crew" role="menuitem">Crew</a></li>
+                    <li><button class="btn-primary" id="join-btn" aria-label="Join a cleanup crew">Join Crew</button></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" role="main">
+        <!-- Hero Section -->
+        <section class="hero" aria-label="Welcome to ShoreSquad">
+            <div class="hero-content">
+                <h1>Rally Your Crew.<br>Clean the Beach.</h1>
+                <p class="hero-subtitle">Track weather, coordinate with your squad, and make real impact on our beaches.</p>
+                <div class="hero-cta">
+                    <button class="btn-primary btn-lg" id="cta-join">Join a Cleanup</button>
+                    <button class="btn-secondary btn-lg" id="cta-explore">Explore Map</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section id="map" class="map-section" aria-label="Interactive beach map">
+            <h2>Find Your Cleanup Site</h2>
+            <div class="map-container" id="map-container" role="region" aria-label="Beach cleanup locations map">
+                <p class="map-placeholder">🗺️ Interactive map loading...</p>
+            </div>
+            <div class="map-filters" role="region" aria-label="Map filters">
+                <button class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
+                <button class="filter-btn" data-filter="active" aria-pressed="false">Active</button>
+                <button class="filter-btn" data-filter="upcoming" aria-pressed="false">Upcoming</button>
+            </div>
+        </section>
+
+        <!-- Weather Section -->
+        <section id="weather" class="weather-section" aria-label="Current beach weather">
+            <h2>Weather Forecast</h2>
+            <div class="weather-grid" id="weather-grid" role="region" aria-label="Weather conditions for beaches">
+                <div class="weather-card" aria-label="Loading weather data">
+                    <p class="weather-placeholder">☀️ Weather data loading...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cleanups Section -->
+        <section id="cleanups" class="cleanups-section" aria-label="Upcoming beach cleanups">
+            <h2>Upcoming Cleanups</h2>
+            <div class="cleanups-grid" id="cleanups-grid" role="region" aria-label="List of scheduled beach cleanups">
+                <article class="cleanup-card" aria-label="Sample cleanup event">
+                    <div class="cleanup-header">
+                        <h3>Coral Bay Cleanup</h3>
+                        <span class="cleanup-badge">Beginner Friendly</span>
+                    </div>
+                    <p class="cleanup-date">📅 Saturday, December 14 • 9:00 AM</p>
+                    <p class="cleanup-location">📍 Coral Bay, 2.3 km away</p>
+                    <p class="cleanup-desc">Join us for a morning beach cleanup! We'll collect plastic, organize by type, and report findings.</p>
+                    <div class="cleanup-footer">
+                        <div class="crew-count">👥 <span id="crew-count-1">12</span> crew members</div>
+                        <button class="btn-secondary" aria-label="Join Coral Bay Cleanup">Join</button>
+                    </div>
+                </article>
+
+                <article class="cleanup-card" aria-label="Sample cleanup event">
+                    <div class="cleanup-header">
+                        <h3>Sunset Beach Cleanup</h3>
+                        <span class="cleanup-badge">Experienced</span>
+                    </div>
+                    <p class="cleanup-date">📅 Sunday, December 15 • 4:00 PM</p>
+                    <p class="cleanup-location">📍 Sunset Beach, 5.1 km away</p>
+                    <p class="cleanup-desc">Advanced cleanup with underwater survey and data collection for marine research.</p>
+                    <div class="cleanup-footer">
+                        <div class="crew-count">👥 <span id="crew-count-2">8</span> crew members</div>
+                        <button class="btn-secondary" aria-label="Join Sunset Beach Cleanup">Join</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Crew Section -->
+        <section id="crew" class="crew-section" aria-label="Your crew members">
+            <h2>Your Crew</h2>
+            <div class="crew-container">
+                <div class="crew-list" id="crew-list" role="list">
+                    <div class="crew-member" role="listitem">
+                        <div class="member-avatar">👤</div>
+                        <div class="member-info">
+                            <h4>You</h4>
+                            <p>0 cleanups completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="crew-stats">
+                    <div class="stat-card">
+                        <h4>Impact</h4>
+                        <p class="stat-value">0 kg</p>
+                        <p class="stat-label">Plastic collected</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Streak</h4>
+                        <p class="stat-value">0</p>
+                        <p class="stat-label">Consecutive cleanups</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call-to-Action Section -->
+        <section class="cta-section" aria-label="Call to action">
+            <h2>Ready to Make Waves?</h2>
+            <p>Join ShoreSquad today and start your beach cleanup journey with your crew.</p>
+            <button class="btn-primary btn-lg" id="final-cta" aria-label="Sign up for ShoreSquad">Get Started Now</button>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h5>About ShoreSquad</h5>
+                <p>Mobilizing young people to clean beaches through weather tracking, community coordination, and eco-action fun.</p>
+            </div>
+            <div class="footer-section">
+                <h5>Quick Links</h5>
+                <ul role="list">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#privacy">Privacy</a></li>
+                    <li><a href="#terms">Terms</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h5>Follow Us</h5>
+                <div class="social-links">
+                    <a href="#" aria-label="ShoreSquad on Twitter" title="Twitter">𝕏</a>
+                    <a href="#" aria-label="ShoreSquad on Instagram" title="Instagram">📷</a>
+                    <a href="#" aria-label="ShoreSquad on TikTok" title="TikTok">🎵</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 ShoreSquad. Making beaches cleaner, one crew at a time. 🌊</p>
+        </div>
+    </footer>
+
+    <!-- Modal for Join Crew -->
+    <dialog id="join-modal" class="modal" aria-labelledby="modal-title">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close dialog">&times;</button>
+            <h2 id="modal-title">Join ShoreSquad Crew</h2>
+            <form id="join-form" aria-label="Join crew form">
+                <div class="form-group">
+                    <label for="name">Your Name *</label>
+                    <input type="text" id="name" name="name" required aria-required="true" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required aria-required="true" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="location">Preferred Beach</label>
+                    <input type="text" id="location" name="location" placeholder="Enter beach name">
+                </div>
+                <button type="submit" class="btn-primary btn-block" aria-label="Submit join form">Join the Crew</button>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Scripts -->
+    <script src="js/app.js" defer></script>
+</body>
+</html>

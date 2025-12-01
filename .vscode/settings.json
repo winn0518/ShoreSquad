@@ -1,0 +1,18 @@
+{
+    "liveServer.settings.port": 5500,
+    "liveServer.settings.host": "localhost",
+    "liveServer.settings.root": "/",
+    "liveServer.settings.mount": [],
+    "liveServer.settings.https": false,
+    "liveServer.settings.wait": 100,
+    "liveServer.settings.ignoreFiles": [
+        ".vscode/**",
+        "**/*.scss",
+        "**/*.sass",
+        ".gitignore"
+    ],
+    "liveServer.settings.donotShowInfoMsg": false,
+    "liveServer.settings.fullReload": false,
+    "liveServer.settings.useWebExt": false,
+    "liveServer.settings.hideExplorerRootFiles": false
+}
