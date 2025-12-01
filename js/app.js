@@ -351,11 +351,11 @@ class WeatherManager {
 
     async fetchWeather() {
         try {
-            // Simulated weather data
+            // Simulated weather data (in metric units: Celsius)
             const weatherData = [
-                { location: 'Coral Bay', temp: 72, condition: '☀️ Sunny', humidity: 65 },
-                { location: 'Sunset Beach', temp: 68, condition: '⛅ Partly Cloudy', humidity: 70 },
-                { location: 'Reef Point', temp: 70, condition: '🌊 Windy', humidity: 75 }
+                { location: 'Coral Bay', temp: 22, condition: '☀️ Sunny', humidity: 65 },
+                { location: 'Sunset Beach', temp: 20, condition: '⛅ Partly Cloudy', humidity: 70 },
+                { location: 'Reef Point', temp: 21, condition: '🌊 Windy', humidity: 75 }
             ];
 
             this.renderWeather(weatherData);
@@ -372,7 +372,7 @@ class WeatherManager {
             <div class="weather-card" role="region" aria-label="Weather for ${weather.location}">
                 <h4>${weather.location}</h4>
                 <div style="font-size: 2rem; margin: 1rem 0;">${weather.condition}</div>
-                <p><strong>${weather.temp}°F</strong></p>
+                <p><strong>${weather.temp}°C</strong></p>
                 <p>Humidity: ${weather.humidity}%</p>
             </div>
         `).join('');
