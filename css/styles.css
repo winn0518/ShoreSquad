@@ -463,23 +463,47 @@ section h2 {
 
 .weather-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-lg);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
 }
 
 .weather-card {
     background: linear-gradient(135deg, var(--color-primary), var(--color-success));
     color: var(--color-white);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
     border-radius: var(--border-radius-lg);
     text-align: center;
     box-shadow: var(--shadow-md);
     transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
 }
 
 .weather-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px) scale(1.02);
     box-shadow: var(--shadow-lg);
+}
+
+.weather-card h4 {
+    color: var(--color-white);
+    margin: 0 0 var(--spacing-xs);
+    font-size: 1.1rem;
+}
+
+.weather-date {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: var(--spacing-sm);
+}
+
+.weather-condition {
+    font-size: 1rem;
+    margin: var(--spacing-sm) 0;
+    font-weight: 600;
 }
 
 .weather-placeholder {

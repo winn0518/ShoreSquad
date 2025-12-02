@@ -9,11 +9,15 @@
 
 const CONFIG = {
     API: {
-        WEATHER: 'https://api.weatherapi.com/v1/current.json',
+        // NEA Realtime Weather API from data.gov.sg (Singapore)
+        WEATHER_REALTIME: 'https://api.data.gov.sg/v1/environment/air-temperature',
+        WEATHER_FORECAST: 'https://api.data.gov.sg/v1/environment/4-day-weather-forecast',
+        WEATHER_HUMIDITY: 'https://api.data.gov.sg/v1/environment/relative-humidity',
         MAPS: 'https://api.mapbox.com/styles/v1/mapbox/streets-v12',
     },
     DEBOUNCE_DELAY: 300,
     ANIMATION_DURATION: 300,
+    WEATHER_CACHE_TIME: 600000, // 10 minutes cache
 };
 
 // Sample cleanup data
@@ -340,46 +344,199 @@ class LazyLoader {
 }
 
 // ============================================
-// WEATHER SIMULATION
+// WEATHER MANAGEMENT - NEA Singapore Weather API
 // ============================================
 
 class WeatherManager {
     constructor() {
         this.weatherGrid = document.getElementById('weather-grid');
+        this.weatherCache = null;
+        this.lastFetchTime = 0;
         this.loadWeatherData = debounce(() => this.fetchWeather(), CONFIG.DEBOUNCE_DELAY);
     }
 
+    /**
+     * Fetch 4-day weather forecast from NEA API
+     */
     async fetchWeather() {
         try {
-            // Simulated weather data (in metric units: Celsius)
-            const weatherData = [
-                { location: 'Coral Bay', temp: 22, condition: '☀️ Sunny', humidity: 65 },
-                { location: 'Sunset Beach', temp: 20, condition: '⛅ Partly Cloudy', humidity: 70 },
-                { location: 'Reef Point', temp: 21, condition: '🌊 Windy', humidity: 75 }
-            ];
+            // Check cache
+            const now = Date.now();
+            if (this.weatherCache && (now - this.lastFetchTime) < CONFIG.WEATHER_CACHE_TIME) {
+                console.log('Using cached weather data');
+                this.renderWeather(this.weatherCache);
+                return;
+            }
 
+            console.log('Fetching NEA weather data...');
+            
+            // Fetch 4-day forecast from NEA API
+            const response = await fetch(CONFIG.API.WEATHER_FORECAST);
+            
+            if (!response.ok) {
+                throw new Error(`Weather API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            // Parse NEA API response
+            const weatherData = this.parseNEAResponse(data);
+            
+            // Cache the data
+            this.weatherCache = weatherData;
+            this.lastFetchTime = now;
+            
             this.renderWeather(weatherData);
+            announceToScreenReader('Weather forecast updated');
         } catch (err) {
             console.error('Weather fetch error:', err);
-            announceToScreenReader('Could not load weather data');
+            announceToScreenReader('Could not load weather data. Showing cached data.');
+            
+            // Fall back to cached data or simulated data
+            if (this.weatherCache) {
+                this.renderWeather(this.weatherCache);
+            } else {
+                this.renderWeatherFallback();
+            }
         }
     }
 
+    /**
+     * Parse NEA API response for 4-day forecast
+     * API returns forecast for multiple areas
+     */
+    parseNEAResponse(data) {
+        try {
+            if (!data.items || data.items.length === 0) {
+                return this.getSimulatedWeather();
+            }
+
+            const forecast = data.items[0];
+            
+            // Map NEA forecast days to user-friendly format
+            const weatherData = forecast.forecasts.slice(0, 4).map((dayForecast, index) => {
+                const forecastDate = new Date();
+                forecastDate.setDate(forecastDate.getDate() + index);
+                
+                return {
+                    day: this.formatDay(forecastDate),
+                    date: forecastDate.toLocaleDateString('en-SG', { month: 'short', day: 'numeric' }),
+                    condition: this.mapWeatherCondition(dayForecast.forecast),
+                    forecast: dayForecast.forecast,
+                    emoji: this.getWeatherEmoji(dayForecast.forecast)
+                };
+            });
+
+            return weatherData;
+        } catch (err) {
+            console.warn('Error parsing NEA response:', err);
+            return this.getSimulatedWeather();
+        }
+    }
+
+    /**
+     * Get simulated weather data (fallback)
+     */
+    getSimulatedWeather() {
+        const forecast = [
+            { day: 'Today', date: 'Dec 2', condition: 'Sunny', emoji: '☀️', forecast: 'Sunny' },
+            { day: 'Tomorrow', date: 'Dec 3', condition: 'Partly Cloudy', emoji: '⛅', forecast: 'Partly cloudy' },
+            { day: 'Wednesday', date: 'Dec 4', condition: 'Thundery', emoji: '⛈️', forecast: 'Thundery showers' },
+            { day: 'Thursday', date: 'Dec 5', condition: 'Rainy', emoji: '🌧️', forecast: 'Rainy' }
+        ];
+        return forecast;
+    }
+
+    /**
+     * Map NEA forecast text to user-friendly condition
+     */
+    mapWeatherCondition(forecast) {
+        const text = forecast.toLowerCase();
+        
+        if (text.includes('sunny') || text.includes('fine')) return 'Sunny';
+        if (text.includes('partly')) return 'Partly Cloudy';
+        if (text.includes('cloudy') || text.includes('overcast')) return 'Cloudy';
+        if (text.includes('rain')) return 'Rainy';
+        if (text.includes('thunder') || text.includes('storm')) return 'Thundery';
+        if (text.includes('showers')) return 'Showers';
+        if (text.includes('wind')) return 'Windy';
+        
+        return forecast;
+    }
+
+    /**
+     * Get emoji for weather condition
+     */
+    getWeatherEmoji(forecast) {
+        const text = forecast.toLowerCase();
+        
+        if (text.includes('sunny') || text.includes('fine')) return '☀️';
+        if (text.includes('partly')) return '⛅';
+        if (text.includes('cloudy') || text.includes('overcast')) return '☁️';
+        if (text.includes('thunder') || text.includes('storm')) return '⛈️';
+        if (text.includes('showers')) return '🌧️';
+        if (text.includes('rain')) return '🌧️';
+        if (text.includes('wind')) return '💨';
+        
+        return '🌤️';
+    }
+
+    /**
+     * Format date to day name
+     */
+    formatDay(date) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        if (date.toDateString() === today.toDateString()) {
+            return 'Today';
+        } else if (date.toDateString() === tomorrow.toDateString()) {
+            return 'Tomorrow';
+        } else {
+            return date.toLocaleDateString('en-SG', { weekday: 'short' });
+        }
+    }
+
+    /**
+     * Render 4-day weather forecast
+     */
     renderWeather(data) {
         if (!this.weatherGrid) return;
 
         this.weatherGrid.innerHTML = data.map(weather => `
-            <div class="weather-card" role="region" aria-label="Weather for ${weather.location}">
-                <h4>${weather.location}</h4>
-                <div style="font-size: 2rem; margin: 1rem 0;">${weather.condition}</div>
-                <p><strong>${weather.temp}°C</strong></p>
-                <p>Humidity: ${weather.humidity}%</p>
+            <div class="weather-card" role="region" aria-label="Weather for ${weather.day}">
+                <h4>${weather.day}</h4>
+                <p class="weather-date">${weather.date}</p>
+                <div style="font-size: 2.5rem; margin: 1rem 0;">${weather.emoji}</div>
+                <p class="weather-condition"><strong>${weather.condition}</strong></p>
+                <p style="font-size: 0.9rem; opacity: 0.9;">{{ weather.forecast }}</p>
             </div>
         `).join('');
+
+        console.log('Weather cards rendered successfully');
+    }
+
+    /**
+     * Render weather fallback UI
+     */
+    renderWeatherFallback() {
+        if (!this.weatherGrid) return;
+
+        this.weatherGrid.innerHTML = `
+            <div class="weather-card" style="grid-column: 1/-1; text-align: center;">
+                <p style="margin: 0; opacity: 0.7;">
+                    Unable to fetch live weather data. Please check the NEA API connection.
+                </p>
+            </div>
+        `;
     }
 
     init() {
         this.fetchWeather();
+        
+        // Refresh weather every 10 minutes
+        setInterval(() => this.fetchWeather(), CONFIG.WEATHER_CACHE_TIME);
     }
 }
 
